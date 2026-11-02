@@ -1,0 +1,394 @@
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("fonts/bricolage-grotesque.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Junicode";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/Junicode-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Junicode";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/Junicode-Bold.ttf") format("truetype");
+}
+
+/* ============================================================================
+   COMMUN — alias de variables (identiques dans tous les thèmes)
+   ============================================================================ */
+:root {
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
+  --primary-rgb: var(--accent-rgb);
+  --brand-blue: var(--accent);
+  --btn-text: var(--text-primary);
+  --text-link: var(--accent);
+  --font-family: "Bricolage Grotesque", sans-serif;
+  --font-logo: "Junicode", serif;
+}
+
+/* ============================================================================
+   LIGHT  (fond crème #f2f0e3, texte #2e2e2e, accent corail #f76f53)
+   ============================================================================ */
+:root {
+  --accent: #f76f53;
+  --accent-hover: #e55a3e;
+  --accent-rgb: 227, 64, 31;
+
+  --link-blue: #f76f53;
+  --text-link-visited: #dd9486;
+/*
+  --bg: #f2f0e3;
+  --bg-light: #e6e4d7;
+  --bg-hover: #e0ded1;
+  --border: #d6d2be;
+  --border-light: #1f1f1f; 
+  --search-bar-bg: #e6e4d7;
+  --search-bar-bg-hover: #e0ded1;
+  --btn-bg: #e4e1cf;
+/*
+/* TEST FONDS plus clairs comme le site Pangolin */
+  --bg: #faf9f2;
+  --bg-light: #f2f0e7;
+  --bg-hover: #EAE6D7;
+  --border: #d6d2be;
+  --border-light: #1f1f1f;
+  --search-bar-bg: #f2f0e7;
+  --search-bar-bg-hover: #F5F2EB;
+  --btn-bg: #e4e1cf;
+/* TEST FONTS BLEUTÉES */
+  --text-primary: #0b1530;
+  --text-secondary: #0D1631;
+  --text-third: #f2f0e3;
+  --text-cite: #4A4C54;
+  --text-snippet: #0b1530c9;
+/*
+  --text-primary: #1f1f1f;
+  --text-secondary: #2e2e2e;
+  --text-third: #f2f0e3;
+  --text-cite: #524d4a;
+  --text-snippet: #4a4745;
+*/
+
+
+  --danger: #e3401f;
+  --warning: #c9a227;
+  --success: #4a7c59;
+  --brand-yellow: #c9a24a;
+
+  --overlay-bg: rgba(46, 46, 46, 0.4);
+  --white: #f2f0e3;
+
+  --contrast-bg: #2e2e2e;
+  --contrast-text: #f2f0e3;
+  --subtle-bg: #e4e1cf;
+  --theme-bar-bg: transparent;
+  --theme-bar-text: #6b6a63;
+  --theme-pagination-active-bg: #f9ddd4;
+  --shadow-sm: 0 2px 6px rgba(46, 46, 46, 0.04);
+  --shadow-md: 0 6px 16px rgba(46, 46, 46, 0.08);
+  
+}
+
+/* ============================================================================
+   DARK — system preference
+   (uniquement les variables ; aucune règle de composant ici)
+   ============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --accent: #f76f53;
+    --accent-hover: #ff8a73;
+    --accent-rgb: 247, 111, 83;
+
+    --link-blue: #f76f53;
+    --text-link-visited: #9e5b4f;
+
+    --bg: #1f1f1f;
+    --bg-light: #2a2a2a;
+    --bg-hover: #343434;
+    --border: #3d3d3d;
+    --border-light: #2e2e2e;
+
+    --text-primary: #d1cfc0;
+    --text-secondary: #96948a;
+    --text-cite: #b5b3a6;
+    --text-snippet: #c4c2b5;
+
+    --search-bar-bg: #2a2a2a;
+    --search-bar-bg-hover: #2e2e2e;
+    --btn-bg: #343434;
+
+    --danger: #e3401f;
+    --warning: #e0b84d;
+    --success: #81c995;
+    --brand-yellow: #e0c27f;
+
+    --overlay-bg: rgba(0, 0, 0, 0.6);
+    --white: #f2f0e3;
+
+    --contrast-bg: #f2f0e3;
+    --contrast-text: #1f1f1f;
+    --subtle-bg: #2a2a2a;
+    --theme-bar-bg: transparent;
+    --theme-bar-text: #96948a;
+    --theme-pagination-active-bg: #3d2820;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.4);
+    
+  }
+}
+
+/* ============================================================================
+   DARK — explicit toggle
+   ============================================================================ */
+:root[data-theme="dark"] {
+  --accent: #f76f53;
+  --accent-hover: #ff8a73;
+  --accent-rgb: 247, 111, 83;
+
+  --link-blue: #f76f53;
+  --text-link-visited: #9e5b4f;
+
+  --bg: #1f1f1f;
+  --bg-light: #2a2a2a;
+  --bg-hover: #343434;
+  --border: #3d3d3d;
+  --border-light: #2e2e2e;
+
+  --text-primary: #d1cfc0;
+  --text-secondary: #96948a;
+  --text-cite: #b5b3a6;
+  --text-snippet: #c4c2b5;
+
+  --search-bar-bg: #2a2a2a;
+  --search-bar-bg-hover: #2e2e2e;
+  --btn-bg: #343434;
+
+  --danger: #e3401f;
+  --warning: #e0b84d;
+  --success: #81c995;
+  --brand-yellow: #e0c27f;
+
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --white: #ECEBE4;
+
+  --contrast-bg: #f2f0e3;
+  --contrast-text: #1f1f1f;
+  --subtle-bg: #2a2a2a;
+  --theme-bar-bg: transparent;
+  --theme-bar-text: #96948a;
+  --theme-pagination-active-bg: #3d2820;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.4);
+  
+}
+
+/* ============================================================================
+   COMMUN — règles de composants (hors media query : valables
+   quel que soit le thème système ou le toggle data-theme)
+   ============================================================================ */
+*, *::before, *::after {
+  box-shadow: none !important;
+}
+/* puis on redéfinit un flou discret pour les éléments visuellement porteurs */
+/* .sidebar-panel, .ac-dropdown, .results-search-bar, .dropdown-menu, .settings-section, .filter-bar, .popover, .slot-below-sidebar, .result-engine-tag, .apps-pocket-panel, */
+:where(.ac-dropdown, .dropdown-menu, .apps-pocket-panel, [class*="shadow"]) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+* {
+/*  box-shadow: none !important; */
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-hover) var(--bg);
+}
+body:has(.main-home) {
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+@keyframes logo-boot {
+  0%, 99% { visibility: hidden; }
+  100%    { visibility: visible; }
+}
+
+::selection {
+  background: rgba(var(--primary-rgb), 0.3);
+}
+élément {
+}
+@media (min-width: 768px) {
+  #main-home {
+  	margin-top: 40px;
+    margin-bottom: -40px;
+  }
+}
+.logo span, .results-logo span, .logo-letter {
+  font-family: var(--font-logo);
+  color: var(--text-primary);
+}
+
+.button-row .search-btn,
+.button-row .lucky-btn {
+  font-family: var(--font-family);
+}
+
+.lucky-slot-inner span {
+  font-family: var(--font-family);
+}
+
+.button-row .lucky-btn .lucky-slot-inner span {
+  font-family: var(--font-family);
+}
+
+.glance-ai-expand {
+  color: var(--text-secondary) !important;
+}
+.glance-ai-expand:hover {
+  color: var(--text-primary) !important;
+}
+
+.search-btn {
+  border: 0px;
+  background: var(--text-primary);
+  border-radius: var(--degoog-search-bar-radius, 0.75rem);
+  color: var(--bg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.search-btn:hover {
+  border-color: transparent;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.lucky-btn:hover {
+  background: var(--accent);
+  border-color: transparent;
+}
+.lucky-btn.hovering .lucky-slot {
+  opacity: 1;
+  background: var(--accent);
+}
+.lucky-btn .lucky-slot-inner span {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.degoog-tab:not(.active) {
+  color: var(--text-snippet);
+}
+#results-tabs {
+  border-bottom: 1px solid var(--bg-light);
+}
+.degoog-tab:hover:not(.active), .results-tab:hover:not(.active):not([class~="degoog-tab"]) {
+  color: var(--accent);
+}
+
+/* trait arrondi sous les tabs actifs (Web, keyword, Image…) */
+.degoog-tab.active,
+.active.results-tab:not([class~="degoog-tab"]) {
+  color: var(--text-primary);
+  position: relative;
+  border-bottom-color: transparent;
+}
+.degoog-tab.active::after,
+.active.results-tab:not([class~="degoog-tab"])::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  background-color: var(--text-primary);
+  border-radius: 8px 8px 0 0 / 4px 4px 0 0;
+  pointer-events: none;
+}
+/* Animation "g g" SANS glow - sur la page principale, pas sur celle des résultats*/
+#home-logo .logo-g1.logo-letter,
+#home-logo .logo-g2.logo-letter {
+  animation: logo-color-fade3 3.4s ease-out both;  
+}
+@keyframes logo-color-fade3 {
+  0% { color: var(--bg); }
+  12% { color: var(--bg); }
+  80% { color: var(--accent); }
+  100% { color: var(--text-primary); }
+}
+
+/* Animation "g g" AVEC glow - sur la page principale, pas sur celle des résultats   
+#home-logo .logo-g1.logo-letter,
+#home-logo .logo-g2.logo-letter {
+  animation: logo-color-fade3 3.4s ease-out both;
+}
+
+@keyframes logo-color-fade3 {
+  0% {
+    color: var(--bg);
+    text-shadow: none;
+  }
+  12% {
+    color: var(--bg);
+    text-shadow: none;
+  }
+  50% {
+    color: var(--accent);
+    text-shadow: none;
+  }
+  62% {
+    color: var(--accent);
+    text-shadow:
+      0 0 2px var(--accent),
+      0 0 4px var(--accent);
+  }
+  74% {
+    color: var(--accent);
+    text-shadow: none;
+  }
+  100% {
+    color: var(--text-primary);
+    text-shadow: none;
+  }
+}*/
+
+
+#home-logo .logo-d.logo-letter,
+#home-logo .logo-e.logo-letter,
+#home-logo .logo-o1.logo-letter,
+#home-logo .logo-o2.logo-letter {
+  animation: logo-color-fade2 1s ease-out both;  /* délais individuels ci-dessous */
+  animation-delay: 1s;                          /* valeur par défaut, surchargée par lettre */
+}
+#home-logo .logo-e.logo-letter  { animation-delay: 1.2s; }
+#home-logo .logo-o1.logo-letter { animation-delay: 1.4s; }
+#home-logo .logo-o2.logo-letter { animation-delay: 1.6s; }
+
+@keyframes logo-color-fade2 {
+  from { color: var(--bg); }
+  to   { color: var(--text-primary); }
+}
+/* accessibilité : pas d'attente invisible si animations réduites */
+@media (prefers-reduced-motion: reduce) {
+  .logo-g1.logo-letter,
+  .logo-g2.logo-letter,
+  .logo-d.logo-letter,
+  .logo-e.logo-letter,
+  .logo-o1.logo-letter,
+  .logo-o2.logo-letter {
+    animation: none;
+    color: var(--text-primary);
+  }
+}
+/* modal footer: teinte douce de la bordure du thème sur la surface modale */
+.ext-modal-footer { background: color-mix(in oklch, var(--bg-light) 75%, var(--border) 25%); }

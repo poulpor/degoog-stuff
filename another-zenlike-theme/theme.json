@@ -1,0 +1,5 @@
+{
+  "name": "another-zenlike-theme",
+  "description": "Inspired by the Zen browser website, a coral theme with both light and dark mode support. The light mode is slightly different from Zen’s color scheme.",
+  "css": "style.css"
+}
