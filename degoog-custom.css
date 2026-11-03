@@ -135,31 +135,37 @@ body.has-results {
   filter: grayscale(0%) opacity(.60);
 }
 
-/* TMDB plugin changes: full-width info in the results section */
+/* I DON'T RECOMMEND TO USE THIS Custom CSS for the TMDB plugin. It changes: full-width info in the results section */
+/*
 .tmdb-panel--tv .tmdb-tv-band--with-head .tmdb-tv-rail {
   grid-column: 2;
   grid-row: 2 / span 2;
 }
-
+*/
+/*
 .tmdb-person-hero {
   display: block;
 }
-
+*/
+/*
 .tmdb-person-portrait {
   width: 256px;
   height: auto;
   margin: 0 0 1rem; /* Space below the portrait */
+/*
 }
 
 .tmdb-person-facts {
   display: block;
   grid-template-columns: none; /* Remove the grid */
+/*
 }
 
 .tmdb-person-fact {
   border: none !important;
   padding: 0.5rem 0;
 }
+*/
 
 /* HIDE AT A GLANCE
 .glance-box {
