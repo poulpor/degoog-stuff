@@ -1,11 +1,10 @@
-/* Change .image-grid from 798.8px to 801px when there's an image preview in the sidebar. This way, you get 4 colums of images results instead of 3 */
+/* 1/2 IN CENTERED MODE: Change .image-grid from 798.8px to 801px when there's an image preview in the sidebar. This way, you get 4 colums of images results instead of 3 */
 /* Normal state : images grid is flex */
 .image-grid {
   width: auto;
 }
-/* Image is selected / preview in the sidebar" */
-body:has(.image-card.selected) .image-grid,
-.detail-open .image-grid {
+/* 2/2 Image is selected / preview in the sidebar" */
+.centered-mode:has(.image-card.selected) .image-grid {
   width: 801px !important;
   min-width: 801px !important;
   max-width: 801px !important;
