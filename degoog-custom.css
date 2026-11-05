@@ -1,3 +1,18 @@
+/* Change .image-grid from 798.8px to 801px when there's an image preview in the sidebar. This way, you get 4 colums of images results instead of 3 */
+/* Normal state : images grid is flex */
+.image-grid {
+  width: auto;
+}
+/* Image is selected / preview in the sidebar" */
+body:has(.image-card.selected) .image-grid,
+.detail-open .image-grid {
+  width: 801px !important;
+  min-width: 801px !important;
+  max-width: 801px !important;
+  flex: 0 0 801px !important;
+  box-sizing: border-box;
+}
+
 /* Sidebar: order controlled with flex, engine panel always first */
 #results-sidebar {
   display: flex;
