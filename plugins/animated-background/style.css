@@ -1,0 +1,27 @@
+#app.has-background-video {
+  position: relative;
+}
+
+#background-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+  pointer-events: none;
+}
+
+#app.has-background-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 65%, transparent) 25%,
+    transparent 50%
+  );
+}

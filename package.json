@@ -1,0 +1,19 @@
+{
+  "name": "workspace",
+  "description": "workspace extensions for degoog",
+  "author": "Pimonychan",
+  "plugins": [
+    {
+      "path": "plugins/animated-background",
+      "name": "animated-background",
+      "description": "Adds an animated video background to the home page. Requires a direct MP4 or WebM video URL.",
+      "version": "1.0.0",
+      "type": "slot"
+    }
+  ],
+  "themes": [],
+  "engines": [],
+  "transports": [],
+  "autocomplete": [],
+  "favicon": []
+}
