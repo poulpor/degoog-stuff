@@ -235,8 +235,8 @@ export default {
       label: "Enable bottom gradient",
       type: "toggle",
       description:
-        "Adds a dark/light gradient, depending on the theme, from the bottom of the screen up to 50% of its height.",
-      default: "true",
+        "Adds a dark or light gradient, depending on the theme, from the bottom of the screen up to 50% of its height. This can be useful if you use the FreshRSS plugin.",
+      default: "false",
     },
     {
       key: "allowedLocalHost",
