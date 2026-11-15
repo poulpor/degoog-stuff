@@ -1,4 +1,7 @@
-// Animated background — version simple : bang + script client.
+// Animated background — bang + script client.
+// Remote MP4 URL has priority. Otherwise, videos from
+// data/animated-background/my_live_wallpapers are used.
+// Local videos change every N minutes.
 
 import {
   readFile,
@@ -6,23 +9,41 @@ import {
   rename,
   mkdir,
   stat,
+  readdir,
 } from "node:fs/promises";
-import { join } from "node:path";
+import { join, extname } from "node:path";
+import crypto from "node:crypto";
 
 const DATADIR = join(
   process.cwd(),
   "data",
   "animated-background",
 );
+
 const VIDEO_PATH = join(DATADIR, "animated_background.mp4");
 const STATE_PATH = join(DATADIR, "state.json");
 
+const LOCAL_VIDEOS_DIR = join(
+  DATADIR,
+  "my_live_wallpapers",
+);
+
 const MAX_VIDEO_BYTES = 20 * 1024 * 1024; // 20 MB
+
+const LOCAL_VIDEO_EXTENSIONS = new Set([
+  ".mp4",
+  ".webm",
+]);
+
+const LOCAL_VIDEO_MIME_TYPES = {
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+};
 
 let apiBase = "";
 let videoUrl = "";
 let enableGradient = true;
-let allowedLocalHost = "";
+let localVideoIntervalMinutes = 30;
 
 const readState = async () => {
   try {
@@ -31,13 +52,17 @@ const readState = async () => {
 
     return {
       sourceUrl:
-        typeof state.sourceUrl === "string" ? state.sourceUrl : "",
+        typeof state.sourceUrl === "string"
+          ? state.sourceUrl
+          : "",
       downloadedAt:
         typeof state.downloadedAt === "string"
           ? state.downloadedAt
           : null,
       version:
-        typeof state.version === "string" ? state.version : "",
+        typeof state.version === "string"
+          ? state.version
+          : "",
     };
   } catch {
     return {
@@ -53,44 +78,40 @@ const writeState = async (state) => {
   await writeFile(STATE_PATH, JSON.stringify(state), "utf8");
 };
 
-const normalizeHost = (value) =>
-  String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/^\[|\]$/g, "");
-
-const isPrivateLanHost = (hostname) =>
-  /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-  /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-  /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname);
-
-const isSafeRemoteUrl = (url, allowedLocalHost) => {
+const isSafeRemoteUrl = (url) => {
   try {
     const parsed = new URL(url);
-    const hostname = normalizeHost(parsed.hostname);
-    const allowedHost = normalizeHost(allowedLocalHost);
+
+    const hostname = parsed.hostname
+      .trim()
+      .toLowerCase()
+      .replace(/^\[|\]$/g, "");
 
     const isHttp =
-      parsed.protocol === "https:" || parsed.protocol === "http:";
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:";
 
     const isLoopback =
       hostname === "localhost" ||
       hostname === "127.0.0.1" ||
       hostname === "::1";
 
-    const isCloudMetadata = hostname === "169.254.169.254";
+    const isPrivateLanHost =
+      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(
+        hostname,
+      ) ||
+      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname);
 
-    if (!isHttp || isLoopback || isCloudMetadata) {
-      return false;
-    }
+    const isCloudMetadata =
+      hostname === "169.254.169.254";
 
-    if (isPrivateLanHost(hostname)) {
-      return (
-        allowedHost.length > 0 && hostname === allowedHost
-      );
-    }
-
-    return true;
+    return (
+      isHttp &&
+      !isLoopback &&
+      !isPrivateLanHost &&
+      !isCloudMetadata
+    );
   } catch {
     return false;
   }
@@ -98,19 +119,21 @@ const isSafeRemoteUrl = (url, allowedLocalHost) => {
 
 let downloadPromise = null;
 
-const ensureLocalVideo = async (sourceUrl, allowedLocalHost) => {
+const ensureRemoteVideo = async (sourceUrl) => {
   if (!sourceUrl) {
     return false;
   }
 
-  if (!isSafeRemoteUrl(sourceUrl, allowedLocalHost)) {
+  if (!isSafeRemoteUrl(sourceUrl)) {
     throw new Error(
-      "Invalid or unsupported video URL. For a local-network MP4, set the exact allowed local host in the plugin settings.",
+      "Only public HTTP or HTTPS MP4 URLs are supported. Local and private-network URLs are not allowed.",
     );
   }
 
   if (!sourceUrl.toLowerCase().endsWith(".mp4")) {
-    throw new Error("Only direct MP4 video URLs are supported");
+    throw new Error(
+      "Only direct MP4 video URLs are supported",
+    );
   }
 
   if (downloadPromise) {
@@ -128,7 +151,7 @@ const ensureLocalVideo = async (sourceUrl, allowedLocalHost) => {
           return true;
         }
       } catch {
-        // Fichier absent ou illisible : on le retélécharge.
+        // File missing or unreadable: download it again.
       }
     }
 
@@ -167,7 +190,9 @@ const ensureLocalVideo = async (sourceUrl, allowedLocalHost) => {
       );
     }
 
-    const videoBuffer = Buffer.from(await response.arrayBuffer());
+    const videoBuffer = Buffer.from(
+      await response.arrayBuffer(),
+    );
 
     if (videoBuffer.byteLength === 0) {
       throw new Error("Downloaded video is empty");
@@ -181,7 +206,7 @@ const ensureLocalVideo = async (sourceUrl, allowedLocalHost) => {
       );
     }
 
-    // Un MP4 valide commence par une boîte ftyp.
+    // A valid MP4 starts with an ftyp box.
     const isMp4 =
       videoBuffer.byteLength > 11 &&
       videoBuffer.toString("latin1", 4, 8) === "ftyp";
@@ -213,38 +238,111 @@ const ensureLocalVideo = async (sourceUrl, allowedLocalHost) => {
   return downloadPromise;
 };
 
+const ensureLocalVideosDirectory = async () => {
+  await mkdir(LOCAL_VIDEOS_DIR, { recursive: true });
+};
+
+const listLocalVideos = async () => {
+  try {
+    await ensureLocalVideosDirectory();
+
+    const entries = await readdir(LOCAL_VIDEOS_DIR, {
+      withFileTypes: true,
+    });
+
+    return entries
+      .filter(
+        (entry) =>
+          entry.isFile() &&
+          LOCAL_VIDEO_EXTENSIONS.has(
+            extname(entry.name).toLowerCase(),
+          ),
+      )
+      .map((entry) => entry.name)
+      .sort();
+  } catch (error) {
+    console.error(
+      "[animated-background] Unable to list local videos:",
+      error,
+    );
+
+    return [];
+  }
+};
+
+const selectLocalVideo = (videos) => {
+  if (videos.length === 0) {
+    return null;
+  }
+
+  if (videos.length === 1) {
+    return videos[0];
+  }
+
+  const intervalMs =
+    Math.max(1, localVideoIntervalMinutes) * 60 * 1000;
+
+  const bucket = Math.floor(Date.now() / intervalMs);
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(String(bucket))
+    .digest("hex");
+
+  const index =
+    Number.parseInt(hash.slice(0, 8), 16) % videos.length;
+
+  return videos[index];
+};
+
 export default {
   isClientExposed: true,
   name: "Animated background",
   description:
-    "Displays a configurable animated MP4 video background on the home page, with an optional bottom gradient.",
-  trigger: "animated-background",
+    "Displays a configurable animated MP4 or WebM video background on the home page. A public remote MP4 URL has priority; otherwise, videos placed in the local my_live_wallpapers folder are used and change every N minutes.",
+
+  trigger: "wallpaper",
+  aliases: ["bg", "background"],
 
   settingsSchema: [
     {
+      key: "transparency",
+      type: "info",
+      fieldset: "Remote video...",
+      description: "Optional direct public HTTP or HTTPS URL to an MP4 video file. **If set, this remote video has priority over local videos**. The video is downloaded once and cached locally. Maximum size: 20 MB.",
+    },
+    {
       key: "videoUrl",
-      label: "Background video URL",
+      label: "Video URL",
+      fieldset: "Remote video...",
       type: "url",
-      description:
-        "Direct URL to an MP4 video file. The video is downloaded once and cached locally. File size limit: 20 MB.",
       placeholder: "https://example.com/background.mp4",
-      required: true,
+    },
+    {
+      key: "transparency",
+      label: "How it works",
+      type: "info",
+      fieldset: "...Or local video(s)",
+      description: "Place one or more videos in degoog’s /data/animated_background/my_live_wallpapers folder. With multiple videos, you can shuffle between them randomly after a timed delay. **To switch to this local option, you must clear the remote video field above.**",
+    },
+    {
+      key: "localVideoIntervalMinutes",
+      label: "Local video interval (minutes)",
+      fieldset: "...Or local video(s)",
+      type: "text",
+      description:
+        "How often to choose another local video, in minutes. Applies only when no remote video URL is configured and the my_live_wallpapers folder contains more than one video.",
+      placeholder: "30",
+      default: "30",
     },
     {
       key: "enableGradient",
       label: "Enable bottom gradient",
       type: "toggle",
+      fieldset: "Tweaks",
       description:
-        "Adds a dark or light gradient, depending on the theme, from the bottom of the screen up to 50% of its height. This can be useful if you use the FreshRSS plugin.",
-      default: "false",
-    },
-    {
-      key: "allowedLocalHost",
-      label: "Allowed local video host",
-      type: "text",
-      description:
-        "Optional. Allow one specific local video host, for example 192.168.1.50 or nas.home.arpa. Leave empty to block local-network URLs.",
-      placeholder: "192.168.1.50",
+        "Adds a theme-aware dark or light gradient from the bottom of the screen, extending up to 50% of its height. Useful when using the FreshRSS plugin.",
+      default: "true",
     },
   ],
 
@@ -262,13 +360,20 @@ export default {
         : settings.enableGradient === true ||
           settings.enableGradient === "true";
 
-    allowedLocalHost = String(
-      settings.allowedLocalHost || "",
-    ).trim();
+    const interval = Number(
+      settings.localVideoIntervalMinutes,
+    );
+
+    localVideoIntervalMinutes =
+      Number.isFinite(interval) && interval >= 1
+        ? Math.min(Math.floor(interval), 1440)
+        : 30;
   },
 
   async isConfigured() {
-    return Boolean(videoUrl);
+    const localVideos = await listLocalVideos();
+
+    return Boolean(videoUrl) || localVideos.length > 0;
   },
 
   init(ctx) {
@@ -278,6 +383,13 @@ export default {
     );
 
     apiBase = ctx.apiBase;
+
+    ensureLocalVideosDirectory().catch((error) => {
+      console.error(
+        "[animated-background] Unable to create local videos directory:",
+        error,
+      );
+    });
   },
 
   async execute() {
@@ -293,20 +405,48 @@ export const routes = [
     method: "get",
     path: "/config",
     handler: async () => {
-      return new Response(
-        JSON.stringify({
-          videoUrl: videoUrl && apiBase
-            ? `${apiBase}/video`
-            : "",
-          enableGradient,
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-store",
+      try {
+        const localVideos = await listLocalVideos();
+
+        const hasLocalVideos = localVideos.length > 0;
+
+        const backgroundVideoUrl = videoUrl
+          ? `${apiBase}/video`
+          : hasLocalVideos
+            ? `${apiBase}/local-video`
+            : "";
+
+        return new Response(
+          JSON.stringify({
+            videoUrl: backgroundVideoUrl,
+            enableGradient,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
           },
-        },
-      );
+        );
+      } catch (error) {
+        console.error(
+          "[animated-background] /config:",
+          error,
+        );
+
+        return new Response(
+          JSON.stringify({
+            videoUrl: "",
+            enableGradient,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
+          },
+        );
+      }
     },
   },
 
@@ -318,7 +458,8 @@ export const routes = [
         if (!videoUrl) {
           return new Response(
             JSON.stringify({
-              error: "No background video configured",
+              error:
+                "No remote background video configured",
             }),
             {
               status: 404,
@@ -329,20 +470,25 @@ export const routes = [
           );
         }
 
-        await ensureLocalVideo(videoUrl, allowedLocalHost);
+        await ensureRemoteVideo(videoUrl);
 
         const videoBuffer = await readFile(VIDEO_PATH);
 
         return new Response(videoBuffer, {
           headers: {
             "Content-Type": "video/mp4",
-            "Content-Length": String(videoBuffer.byteLength),
+            "Content-Length": String(
+              videoBuffer.byteLength,
+            ),
             "Cache-Control": "no-store",
             "Accept-Ranges": "bytes",
           },
         });
       } catch (error) {
-        console.error("[animated-background] /video:", error);
+        console.error(
+          "[animated-background] /video:",
+          error,
+        );
 
         return new Response(
           JSON.stringify({
@@ -351,6 +497,74 @@ export const routes = [
           }),
           {
             status: 502,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+      }
+    },
+  },
+
+  {
+    method: "get",
+    path: "/local-video",
+    handler: async () => {
+      try {
+        const videos = await listLocalVideos();
+
+        if (videos.length === 0) {
+          return new Response(
+            JSON.stringify({
+              error:
+                "No local videos found in my_live_wallpapers",
+            }),
+            {
+              status: 404,
+              headers: {
+                "Content-Type": "application/json",
+              },
+            },
+          );
+        }
+
+        const selectedVideo = selectLocalVideo(videos);
+
+        const extension = extname(
+          selectedVideo,
+        ).toLowerCase();
+
+        const contentType =
+          LOCAL_VIDEO_MIME_TYPES[extension] ||
+          "application/octet-stream";
+
+        const videoBuffer = await readFile(
+          join(LOCAL_VIDEOS_DIR, selectedVideo),
+        );
+
+        return new Response(videoBuffer, {
+          headers: {
+            "Content-Type": contentType,
+            "Content-Length": String(
+              videoBuffer.byteLength,
+            ),
+            "Cache-Control": "no-store",
+            "Accept-Ranges": "bytes",
+          },
+        });
+      } catch (error) {
+        console.error(
+          "[animated-background] /local-video:",
+          error,
+        );
+
+        return new Response(
+          JSON.stringify({
+            error: "Local background video unavailable",
+            details: String(error?.message || error),
+          }),
+          {
+            status: 500,
             headers: {
               "Content-Type": "application/json",
             },
