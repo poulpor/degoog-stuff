@@ -218,8 +218,7 @@ export default {
   name: "Animated background",
   description:
     "Displays a configurable animated MP4 video background on the home page, with an optional bottom gradient.",
-  trigger: "wallpaper",
-  aliases: ["bg", "background"],
+  trigger: "animated-background",
 
   settingsSchema: [
     {
