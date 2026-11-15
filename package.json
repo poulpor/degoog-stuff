@@ -6,9 +6,9 @@
     {
       "path": "plugins/animated-background",
       "name": "animated-background",
-      "description": "Adds an animated video background to the home page. Requires a direct MP4 or WebM video URL.",
+      "description": "Adds an animated video background to the home page. Requires a direct MP4 video URL.",
       "version": "1.0.0",
-      "type": "slot"
+      "type": "command"
     }
   ],
   "themes": [],
