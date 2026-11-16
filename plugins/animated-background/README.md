@@ -1,43 +1,30 @@
-# Animated Background for DeGoog
+# Animated Background for degoog
 
-A plugin that displays an animated MP4 video as the home page background.
+A plugin that displays an animated MP4 video as the main home page background.
 
 The video is downloaded once, cached locally, and served by the plugin. An optional gradient can improve readability of FreshRSS plugin over the background.
 
 ## Features
 
-- Displays a looping, muted MP4 video on the DeGoog home page
+- Displays a looping, muted MP4 video on the Degoog home page
 - Downloads the video once and caches it locally. Entering another video url replaces the local mp4 file.
 - Optional bottom gradient for better readability
 - Supports direct MP4 URLs
 - Maximum video size: 20 MB
-- Optional allowlist for one local-network video host
+- **Local and private-network URLs are not allowed.**
 
 
 ## Local video hosting
 
-By default, local-network URLs are blocked for security reasons.
-To use a video hosted on your local network, enter the exact hostname or IP address in **Allowed local video host**, for example:
-
-```text
-192.168.1.50
-```
-
-Then use a direct MP4 URL such as:
-```text
-http://192.168.1.50/videos/background.mp4
-```
+Place one or more videos in degoog’s `/data/animated_background/my_live_wallpapers` folder. With multiple videos, you can shuffle between them randomly after a timed delay. To switch to this local option, you must clear the remote video field.
 
 ## Cache
 
 The downloaded video is stored at:
-
 ```text
 data/animated-background/animated_background.mp4
 ```
-
 Plugin state is stored at:
-
 ```text
 data/animated-background/state.json
 ```
