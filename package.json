@@ -1,6 +1,7 @@
 {
   "name": "pmc-degoog-extensions",
   "description": "Small collection of vibecoded plugins by pmc",
+  "repo-image": "https://avatars.githubusercontent.com/u/49480426?v=4"
   "author": "Pimonychan",
   "plugins": [
     {
