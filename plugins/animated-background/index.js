@@ -309,7 +309,7 @@ export default {
       key: "transparency",
       type: "info",
       fieldset: "Remote video...",
-      description: "Optional direct public HTTP or HTTPS URL to an MP4 video file. **If set, this remote video has priority over local videos**. The video is downloaded once and cached locally. Maximum size: 20 MB.",
+      description: "Optional direct public HTTP or HTTPS URL to an MP4 video file. **If set, this remote video has priority over local videos**. The video is downloaded once and cached locally. Maximum size: 20 MB. **IMPORTANT: Local and private-network URLs are not allowed.**",
     },
     {
       key: "videoUrl",
