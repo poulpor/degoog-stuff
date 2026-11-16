@@ -42,7 +42,7 @@ const LOCAL_VIDEO_MIME_TYPES = {
 
 let apiBase = "";
 let videoUrl = "";
-let enableGradient = true;
+let enableGradient = false;
 let localVideoIntervalMinutes = 30;
 
 const readState = async () => {
