@@ -1,6 +1,6 @@
 {
-  "name": "workspace",
-  "description": "workspace extensions for degoog",
+  "name": "pmc-degoog-extensions",
+  "description": "Small collection of vibecoded plugins by pmc",
   "author": "Pimonychan",
   "plugins": [
     {
