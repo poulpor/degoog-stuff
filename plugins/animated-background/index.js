@@ -309,7 +309,16 @@ export default {
       key: "transparency",
       type: "info",
       fieldset: "Remote video...",
-      description: "Optional direct public HTTP or HTTPS URL to an MP4 video file. **If set, this remote video has priority over local videos**. The video is downloaded once and cached locally. Maximum size: 20 MB. **IMPORTANT: Local and private-network URLs are not allowed. I share a selection of short videos at https://pics.pmchan.ovh/album/37C . Click on a video preview, right click on the download link at the bottom right, copy the link then paste it here: **",
+      description:
+        "**IMPORTANT: local and private-network URLs are not allowed.**\n" +
+        "\n" +
+        "Optional direct public HTTP or HTTPS URL to an MP4 video file.\n" +
+        "If set, this remote video takes priority over local video(s).\n" +
+        "The video is downloaded once and cached locally. **Maximum size: 20 MB**.\n" +
+        "\n" +
+        "I share a selection of various short videos at https://pics.pmchan.ovh/album/37C\n" +
+        "Click on a video preview, right-click the download link at the bottom right,\n" +
+        "copy the link, then paste it here:",
     },
     {
       key: "videoUrl",
