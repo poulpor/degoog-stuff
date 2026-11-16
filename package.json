@@ -8,7 +8,7 @@
       "path": "plugins/animated-background",
       "name": "animated-background",
       "description": "Adds an animated video background to the home page. Requires a direct MP4 video URL.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "command"
     }
   ],
