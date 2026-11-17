@@ -329,7 +329,7 @@ export default {
         "Click on a video preview, right-click the download link at the bottom right,\n" +
         "copy the link, then paste it here.\n" +
         "\n" +
-        "**Please wait a few seconds before navigating to the home page, so the image can download and be cached**",
+        "**Please wait a few seconds before navigating to the home page, so the image can download and be cached.**",
     },
     {
       key: "videoUrl",
