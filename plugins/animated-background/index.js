@@ -40,6 +40,7 @@ const LOCAL_VIDEO_MIME_TYPES = {
   ".webm": "video/webm",
 };
 
+let pluginContext = null;
 let apiBase = "";
 let videoUrl = "";
 let enableGradient = false;
@@ -124,6 +125,12 @@ const ensureRemoteVideo = async (sourceUrl) => {
     return false;
   }
 
+  if (!pluginContext || typeof pluginContext.fetch !== "function") {
+    throw new Error(
+      "Plugin context is not available. Restart DeGoog and try again.",
+    );
+  }
+
   if (!isSafeRemoteUrl(sourceUrl)) {
     throw new Error(
       "Only public HTTP or HTTPS MP4 URLs are supported. Local and private-network URLs are not allowed.",
@@ -155,7 +162,7 @@ const ensureRemoteVideo = async (sourceUrl) => {
       }
     }
 
-    const response = await fetch(sourceUrl, {
+    const response = await pluginContext.fetch(sourceUrl, {
       redirect: "follow",
     });
 
@@ -306,7 +313,7 @@ export default {
 
   settingsSchema: [
     {
-      key: "transparency",
+      key: "remoteVideoInfo",
       type: "info",
       fieldset: "Remote video...",
       description:
@@ -328,11 +335,12 @@ export default {
       placeholder: "https://example.com/background.mp4",
     },
     {
-      key: "transparency",
+      key: "localVideosInfo",
       label: "How it works",
       type: "info",
       fieldset: "...Or local video(s)",
-      description: "Place one or more videos in degoog’s /data/animated_background/my_live_wallpapers folder. With multiple videos, you can shuffle between them randomly after a timed delay. **To switch to this local option, you must clear the remote video field above.**",
+      description:
+        "Place one or more videos in DeGoog’s /data/animated-background/my_live_wallpapers folder. With multiple videos, you can shuffle between them randomly after a timed delay. **To switch to this local option, you must clear the remote video field above.**",
     },
     {
       key: "localVideoIntervalMinutes",
@@ -391,6 +399,7 @@ export default {
       ctx.apiBase,
     );
 
+    pluginContext = ctx;
     apiBase = ctx.apiBase;
 
     ensureLocalVideosDirectory().catch((error) => {
