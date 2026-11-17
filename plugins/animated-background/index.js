@@ -41,7 +41,6 @@ const LOCAL_VIDEO_MIME_TYPES = {
 };
 
 let pluginContext = null;
-let apiBase = "";
 let videoUrl = "";
 let enableGradient = false;
 let localVideoIntervalMinutes = 30;
@@ -125,7 +124,10 @@ const ensureRemoteVideo = async (sourceUrl) => {
     return false;
   }
 
-  if (!pluginContext || typeof pluginContext.fetch !== "function") {
+  if (
+    !pluginContext ||
+    typeof pluginContext.fetch !== "function"
+  ) {
     throw new Error(
       "Plugin context is not available. Restart DeGoog and try again.",
     );
@@ -400,7 +402,6 @@ export default {
     );
 
     pluginContext = ctx;
-    apiBase = ctx.apiBase;
 
     ensureLocalVideosDirectory().catch((error) => {
       console.error(
@@ -424,14 +425,23 @@ export const routes = [
     path: "/config",
     handler: async () => {
       try {
+        if (
+          !pluginContext ||
+          typeof pluginContext.routeUrl !== "function"
+        ) {
+          throw new Error(
+            "Plugin context is not available. Restart DeGoog and try again.",
+          );
+        }
+
         const localVideos = await listLocalVideos();
 
         const hasLocalVideos = localVideos.length > 0;
 
         const backgroundVideoUrl = videoUrl
-          ? `${apiBase}/video`
+          ? pluginContext.routeUrl("video")
           : hasLocalVideos
-            ? `${apiBase}/local-video`
+            ? pluginContext.routeUrl("local-video")
             : "";
 
         return new Response(
