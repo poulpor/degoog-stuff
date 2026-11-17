@@ -326,10 +326,10 @@ export default {
         "The video is downloaded once and cached locally. **Maximum size: 20 MB**.\n" +
         "\n" +
         "I share a selection of various short videos at https://pics.pmchan.ovh/album/37C\n" +
-        "\n" +
-        "**Please wait a few seconds before navigating to the home page, so the image can download and be cached**.\n" +
         "Click on a video preview, right-click the download link at the bottom right,\n" +
-        "copy the link, then paste it here:",
+        "copy the link, then paste it here.\n",
+        "\n" +
+        "**Please wait a few seconds before navigating to the home page, so the image can download and be cached**",
     },
     {
       key: "videoUrl",
