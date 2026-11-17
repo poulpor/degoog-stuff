@@ -8,7 +8,7 @@
       "path": "plugins/animated-background",
       "name": "Animated background(s)",
       "description": "Adds a video background/live wallpaper to the home page, using a direct MP4 video remote URL or locally stored MP4/WEBM video(s).",
-      "version": "1.0.9",
+      "version": "1.0.9b",
       "type": "command"
     }
   ],
