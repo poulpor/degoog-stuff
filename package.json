@@ -10,6 +10,13 @@
       "description": "Adds a video background/live wallpaper to the home page, using a direct MP4 video remote URL or locally stored MP4/WEBM video(s).",
       "version": "1.0.9c",
       "type": "command"
+    },
+    {
+      "path": "plugins/plugins-update-notifier",
+      "name": "Plugins Update Notifier",
+	  "description": "Adds a notification icon to the main page to indicate when one or more updates are available for your installed plugins from the repositories.",
+      "version": "1.0.0",
+      "type": "command"
     }
   ],
   "themes": [],
