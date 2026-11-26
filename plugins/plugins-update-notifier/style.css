@@ -10,7 +10,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  color: var(--primary, currentColor);
+  color: var(--text-secondary);
 }
 
 .degoog-update-link::after {
