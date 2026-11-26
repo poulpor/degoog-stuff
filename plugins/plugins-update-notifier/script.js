@@ -1,20 +1,22 @@
-// --- Plugin update indicator + repository refreshing ---
+// --- Indicateur de mises à jour de plugins + rafraîchissement des dépôts ---
 (function () {
   "use strict";
 
-  const BADGE_ID = "degoog-plugin-update-indicator";
+  const BADGE_CLASS = "degoog-update-link";
+  const GEAR_IDS = ["nav-settings-top", "nav-settings-results"];
+
   const ITEMS_URL = "/api/store/items";
   const REFRESH_URL = "/api/store/repos/refresh";
   const STORE_URL = "/settings/store";
 
-  const CHECK_INTERVAL_MS = 10 * 60 * 1000;        // check state every : 10 min
-  const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000; // refresh every : 24 h
+  const CHECK_INTERVAL_MS = 10 * 60 * 1000;        // relecture de l'état : 10 min
+  const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000; // rafraîchissement : 24 h
   const REFRESH_KEY = "degoogLastStoreRefresh";
 
   let updateCount = 0;
 
   function removeBadge() {
-    document.getElementById(BADGE_ID)?.remove();
+    document.querySelectorAll("." + BADGE_CLASS).forEach(el => el.remove());
   }
 
   function renderBadge() {
@@ -23,39 +25,36 @@
       return;
     }
 
-    const settingsLink = document.getElementById("nav-settings-top");
-    if (!settingsLink || !settingsLink.parentElement) return;
-
-    let badge = document.getElementById(BADGE_ID);
-
-    if (!badge) {
-      badge = document.createElement("a");
-      badge.id = BADGE_ID;
-      badge.className = "header-link degoog-update-link";
-      badge.href = STORE_URL;
-      badge.innerHTML =
-        '<i class="fa-solid fa-circle-arrow-up fa-xl" aria-hidden="true"></i>';
-    }
-
     const label =
       updateCount === 1
-        ? "1 plugin update available"
-        : `${updateCount} plugin updates available`;
+        ? "1 mise à jour de plugin disponible"
+        : `${updateCount} mises à jour de plugins disponibles`;
 
-    badge.dataset.count = String(updateCount);
-    badge.title = label;
-    badge.setAttribute("aria-label", label);
+    GEAR_IDS.forEach(gearId => {
+      const gear = document.getElementById(gearId);
+      if (!gear || !gear.parentElement) return;
 
-    if (badge.nextSibling !== settingsLink) {
-      settingsLink.parentElement.insertBefore(badge, settingsLink);
-    }
+      let badge = gear.previousElementSibling;
+      if (!badge || !badge.classList.contains(BADGE_CLASS)) {
+        badge = document.createElement("a");
+        badge.href = STORE_URL;
+        badge.className = "header-link " + BADGE_CLASS;
+        badge.innerHTML =
+          '<i class="fa-solid fa-circle-arrow-up fa-xl" aria-hidden="true"></i>';
+        gear.parentElement.insertBefore(badge, gear);
+      }
+
+      badge.dataset.count = String(updateCount);
+      badge.title = label;
+      badge.setAttribute("aria-label", label);
+    });
   }
 
   async function refreshReposIfDue() {
     const last = Number(localStorage.getItem(REFRESH_KEY) || 0);
     if (Date.now() - last < REFRESH_INTERVAL_MS) return;
 
-    // The time is recorded before the call to avoid duplicates between tabs.
+    // L'heure est enregistrée avant l'appel pour éviter les doublons entre onglets.
     localStorage.setItem(REFRESH_KEY, String(Date.now()));
 
     try {
@@ -65,13 +64,13 @@
       });
 
       if (!response.ok) {
-        // In case of failure (e.g., session expired), we will retry on the next load.
+        // Échec (ex. session absente) : on retentera au prochain chargement.
         localStorage.setItem(REFRESH_KEY, String(last));
-        console.warn("[UpdateIndicator] refresh refused :", response.status);
+        console.warn("[UpdateIndicator] refresh refusé :", response.status);
       }
     } catch (err) {
       localStorage.setItem(REFRESH_KEY, String(last));
-      console.warn("[UpdateIndicator] refresh failed :", err);
+      console.warn("[UpdateIndicator] refresh impossible :", err);
     }
   }
 
@@ -88,7 +87,7 @@
       updateCount = items.filter(i => i.installed && i.updateAvailable).length;
       renderBadge();
     } catch (err) {
-      console.warn("[UpdateIndicator] check failed :", err);
+      console.warn("[UpdateIndicator] vérification impossible :", err);
     }
   }
 
@@ -105,9 +104,9 @@
       if (document.visibilityState === "visible") run();
     });
 
-    // Replace the icon if the header is recreated.
+    // Replace les icônes si l'en-tête est recréé ou si un second engrenage apparaît.
     new MutationObserver(() => {
-      if (updateCount > 0 && !document.getElementById(BADGE_ID)) renderBadge();
+      if (updateCount > 0) renderBadge();
     }).observe(document.body, { childList: true, subtree: true });
   }
 
