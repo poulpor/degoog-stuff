@@ -12,7 +12,7 @@
 
 export default {
   name: "Plugins Update Notifier",
-  description: "Adds a notification icon to the main page to indicate when one or more updates are available for your installed plugins from the repositories. Click the icon to navigate to the /settings/store page.",
+  description: "Check the [Readme](https://github.com/poulpor/degoog-stuff/blob/main/plugins/plugins-update-notifier/README.md) first! Adds a notification icon to the main page to indicate when one or more updates are available for your installed plugins from the repositories. Click the icon to navigate to the /settings/store page.",
   trigger: "plugins-update-notifier",
 
   /**
