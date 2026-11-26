@@ -1,14 +1,17 @@
 # Plugins Update Notifier
 
-This vibecoded plugin adds a notification icon to the main page to indicate when one or more updates are available for your installed plugins from the repositories. Click the icon to navigate to the `/settings/store` page.
+This plugin adds a notification icon next to the settings gear to indicate when one or more updates are available for your installed plugins from the repositories. Click the icon to go to the `/settings/store` page.
 
-**⚠️ WARNING: INTERNAL USE ONLY**
-This plugin is not intended for public instances. While setting `DEGOOG_SETTINGS_PASSWORDS` should prevent unauthorized users from reaching the `/settings` pages, this feature is specifically designed for internal administration.
+> [!NOTE]
+> **Visible to admins only.** The plugin reads the store data from degoog's store API, which requires an authenticated settings session. When `DEGOOG_SETTINGS_PASSWORDS` is set, the icon only appears for visitors who have entered the settings password during the current session. Other visitors never see it, so the plugin is safe to use on a public instance.
+>
+> If `DEGOOG_SETTINGS_PASSWORDS` is **not** set, the settings pages are open to everyone, and so is this icon. Set the variable if your instance is reachable by other people.
 
 ## Usage
 
-Simply install the plugin. The initial check will occur shortly after installation. Subsequent **repositories** checks will run after 24 hours, triggered when you visit any degoog webpage. Outside of this 24-hour repository check, the plugin performs a local check every 10 minutes, which is useful if you proceed with a manual repository update.
+Install the plugin. The initial check runs shortly after installation, once you are logged in to the settings.
 
-## Configuration
+- **Repository refresh:** at most once every 24 hours, the plugin refreshes your repositories. It is triggered when an authenticated session loads any degoog page, so it will not run if nobody is logged in.
+- **Local check:** every 10 minutes, and whenever you return to the tab, the plugin re-reads the list of installed plugins and updates the icon. This is useful if you refresh the repositories manually from the store.
 
-None required.
+The plugin only refreshes the repositories. It never installs updates itself.
