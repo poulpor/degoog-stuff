@@ -7,7 +7,7 @@ This plugin is not intended for public instances. While setting `DEGOOG_SETTINGS
 
 ## Usage
 
-Simply install the plugin. The initial check will occur shortly after installation, and subsequent checks will run every 24 hours when you visit any degoog webpage.
+Simply install the plugin. The initial check will occur shortly after installation. Subsequent **repositories** checks will run after 24 hours, triggered when you visit any degoog webpage. Outside of this 24-hour repository check, the plugin performs a local check every 10 minutes, which is useful if you proceed with a manual repository update.
 
 ## Configuration
 
