@@ -12,7 +12,7 @@
 
 export default {
   name: "Plugins Update Notifier",
-  description: "plugins-update-notifier bang command",
+  description: "Adds a notification icon to the main page to indicate when one or more updates are available for your installed plugins from the repositories. Click the icon to navigate to the /settings/store page.",
   trigger: "plugins-update-notifier",
 
   /**
