@@ -52,6 +52,7 @@
 
   async function refreshReposIfDue() {
     const last = Number(localStorage.getItem(REFRESH_KEY) || 0);
+
     if (Date.now() - last < REFRESH_INTERVAL_MS) return;
 
     // The timestamp is saved before the request to prevent duplicates across tabs.
@@ -63,12 +64,27 @@
         credentials: "same-origin"
       });
 
-      if (!response.ok) {
-        // Failure (e.g. missing session): retry on the next page load.
+      if (response.status === 401 || response.status === 403) {
+        // The user is not authenticated or not authorized:
+        // do not treat this as a completed refresh.
         localStorage.setItem(REFRESH_KEY, String(last));
-        console.warn("[UpdateIndicator] refresh rejected:", response.status);
+        console.warn(
+          "[UpdateIndicator] refresh not authorized:",
+          response.status
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        // Temporary failure: retry on the next page load.
+        localStorage.setItem(REFRESH_KEY, String(last));
+        console.warn(
+          "[UpdateIndicator] refresh failed:",
+          response.status
+        );
       }
     } catch (err) {
+      // Network or unexpected client-side failure: retry later.
       localStorage.setItem(REFRESH_KEY, String(last));
       console.warn("[UpdateIndicator] refresh failed:", err);
     }
@@ -80,7 +96,22 @@
         credentials: "same-origin",
         cache: "no-store"
       });
-      if (!response.ok) return;
+
+      if (response.status === 401 || response.status === 403) {
+        // The user is not authenticated or not authorized:
+        // no badge should be displayed.
+        updateCount = 0;
+        removeBadge();
+        return;
+      }
+
+      if (!response.ok) {
+        console.warn(
+          "[UpdateIndicator] Store API unavailable:",
+          response.status
+        );
+        return;
+      }
 
       const data = await response.json();
       const items = Array.isArray(data?.items) ? data.items : [];
