@@ -15,7 +15,7 @@
       "path": "plugins/plugins-update-notifier",
       "name": "Plugins Update Notifier",
 	  "description": "Adds a notification icon to the main and results pages to indicate when one or more updates are available for your installed plugins from the repositories.",
-      "version": "1.0.9a",
+      "version": "1.0.9b",
       "type": "command"
     }
   ],
