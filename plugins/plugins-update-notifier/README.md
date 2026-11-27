@@ -11,7 +11,7 @@ This plugin adds a notification icon next to the settings gear to indicate when 
 
 Install the plugin. The initial check runs shortly after installation, once you are logged in to the settings.
 
-- **Repository refresh:** at most once every 6 hours, the plugin refreshes your repositories. It is triggered when an authenticated session loads any degoog page, so it will not run if nobody is logged in.
+- **Repository refresh:** at most once **every 6 hours**, the plugin refreshes your repositories. It is triggered when an authenticated session loads any degoog page, so it will not run if nobody is logged in.
 - **Local check:** every 10 minutes, and whenever you return to the tab, the plugin re-reads the list of installed plugins and updates the icon. This is useful if you refresh the repositories manually from the store.
 
 The plugin only refreshes the repositories. It never installs updates itself.
