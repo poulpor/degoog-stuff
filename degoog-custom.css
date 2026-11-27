@@ -1,9 +1,85 @@
-/* 1/2 IN CENTERED MODE: Change .image-grid from 798.8px to 801px when there's an image preview in the sidebar. This way, you get 4 colums of images results instead of 3 */
-/* Normal state : images grid is flex */
+/* Restore the "old" flex layout:
+   results + pagination on the left, sidebar on the right. */
+@media (min-width: 768px) {
+  #results-page.centered-mode
+  #results-layout:not(.media-mode) {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 2.5rem !important;
+  }
+
+  #results-page.centered-mode
+  #results-layout:not(.media-mode)
+  #results-main {
+    display: block !important;
+    flex: 1 1 0 !important;
+    max-width: 40.75rem !important;
+    min-width: 0 !important;
+  }
+
+  #results-page.centered-mode
+  #results-layout:not(.media-mode)
+  #results-main::before {
+    display: none !important;
+  }
+
+  #results-page.centered-mode
+  #results-layout:not(.media-mode)
+  #sidebar-col,
+  #results-page.centered-mode
+  #results-layout:not(.media-mode)
+  #sidebar-col.is-sticky {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    width: 21.25rem !important;
+    flex: 0 0 21.25rem !important;
+    align-self: flex-start !important;
+    order: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+/* The Engines stats page overflows to the right in centered view;
+   default font-size: 0.88rem; */
+.es-table {
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+
+.sidebar-accordion-body.degoog-accordion-body:has(.related-search-link.degoog-link)::before {
+  content: "Related searches";
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-text);
+}
+
+.related-search-link {
+  padding: 0.2rem 0;
+  border-bottom: none;
+  color: var(--text-secondary);
+}
+
+body:has(#main-home) #sidebar-col.is-sticky {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  z-index: 2;
+}
+
+/* Normal state: the grid remains fluid */
 .image-grid {
   width: auto;
 }
-/* 2/2 Image is selected / preview in the sidebar" */
+
+/* Centered mode + detail panel open:
+   force the grid to 801px to get 4 columns */
 .centered-mode:has(.image-card.selected) .image-grid {
   width: 801px !important;
   min-width: 801px !important;
@@ -12,10 +88,10 @@
   box-sizing: border-box;
 }
 
-/* Sidebar: order controlled with flex, engine panel always first */
+/* Sidebar: order controlled by flex; engine panel always first */
 #results-sidebar {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 12px;
 }
 
@@ -27,7 +103,7 @@
   order: -1;
 }
 
-/* Show "At a glance" in the sidebar above the anime outputs */
+/* Show At a glance in the sidebar, above the anime outputs */
 #slot-below-sidebar [data-slot="at-a-glance-slot"] {
   order: -1;
   max-height: 0;
@@ -43,35 +119,49 @@
   }
 }
 
-/* Add a small top margin to keep custom logos clear of the top of the window */
+/* Add a little top spacing to keep custom logos clear
+   of the top of the window */
 /*body {
-  padding-top: 2rem; 
+  padding-top: 2rem;
 }*/
 body.has-results {
-  padding-top: 1rem; /* adjust this value as needed */
+  padding-top: 1rem; /* value to adjust */
 }
 
-/* Remove scrollbars on mobile */
+/* Roughly align the apps and gear icons with the right sidebar */
+/*
+@media (min-width: 768px) {
+  #results-header {
+    padding-right: clamp(1rem, 1rem + max(0px, (100vw - 48rem) * 0.31), 16rem);
+    padding-left: 1.4rem;   /* or a fixed value, e.g. 1rem */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+*/
+
 @media (max-width: 767px) {
   /* Firefox + standard */
   * {
     scrollbar-width: none;
   }
-  /* Chrome, Safari, Edge, WebKit/Blink-based browsers */
+
+  /* Chrome, Safari, Edge, WebKit/Blink engines */
   *::-webkit-scrollbar {
     display: none;
   }
-  /* Older versions of Edge/IE (just in case) */
+
+  /* Older Edge/IE versions (just in case) */
   * {
     -ms-overflow-style: none;
   }
 }
 
-/* On mobile, gradient to the right below the filters icon in the tab bar;
+/* Gradient to the right below the filters icon in the tabs bar;
    full --bg color on the right */
 @media (max-width: 767px) {
   .tools-wrap {
-    position: sticky;      /* anchoring remains on the wrapper */
+    position: sticky;      /* the anchor stays on the wrapper */
     right: 0;
     z-index: 2;
     flex-shrink: 0;
@@ -79,31 +169,32 @@ body.has-results {
 
   .tools-toggle {
     position: relative;    /* required to position ::before/::after */
-    background: var(--background);   /* keeps the button opaque */
+    background: var(--background);   /* the button remains opaque */
   }
 
-  /* Opaque-to-transparent fade to the left of the button */
+  /* Opaque-to-transparent fade, to the left of the button */
   .tools-toggle::before {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 100%;            /* immediately to the left of the button */
+    right: 100%;            /* just to the left of the button */
     width: 3.5rem;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       transparent,
       var(--bg)
     );
     pointer-events: none;
   }
 
-  /* Opaque-to-transparent fade to the right of the button */
+  /* Opaque-to-transparent fade, to the right of the button */
   .tools-toggle::after {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 100%;             /* immediately to the right of the button */
+    left: 100%;             /* just to the right of the button */
     width: 1rem;
     background: var(--bg);
     pointer-events: none;
@@ -149,37 +240,31 @@ body.has-results {
   filter: grayscale(0%) opacity(.60);
 }
 
-/* I DON'T RECOMMEND TO USE THIS Custom CSS for the TMDB plugin. It changes: full-width info in the results section */
-/*
+/* Plugin modifications: full-width TMDB info in the results section */
 .tmdb-panel--tv .tmdb-tv-band--with-head .tmdb-tv-rail {
   grid-column: 2;
   grid-row: 2 / span 2;
 }
-*/
-/*
+
 .tmdb-person-hero {
   display: block;
 }
-*/
-/*
+
 .tmdb-person-portrait {
   width: 256px;
   height: auto;
   margin: 0 0 1rem; /* Space below the portrait */
-/*
 }
 
 .tmdb-person-facts {
   display: block;
   grid-template-columns: none; /* Remove the grid */
-/*
 }
 
 .tmdb-person-fact {
   border: none !important;
   padding: 0.5rem 0;
 }
-*/
 
 /* HIDE AT A GLANCE
 .glance-box {
@@ -191,19 +276,20 @@ body.has-results {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Centered results ─────────────────── 
+/* ── Centered results ───────────────────
 #results-page {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
 } */
+
 .apps-pocket-wrapper {
   margin-right: 0;
 }
 
 /* ── In the "engines sidebar", replace the "Retry" text button with an icon
-   and display it on one line, except on the "Images" search page because
-   there is not enough space ─────────*/
+   and display it on one line, except on the "Images" search page
+   because of the lack of space ─────────*/
 
 /* 1. Prepare the link (hide the "Retry" text) */
 .engine-retry-link {
@@ -234,7 +320,7 @@ body.has-results {
   background-color: var(--text-secondary);
   opacity: 50%;
 
-  /* Refresh icon (data URI SVG) */
+  /* Refresh icon (SVG encoded as data) */
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a9 9 0 1 1-6.71-8.24'%3E%3C/path%3E%3Cpolyline points='22 3 22 4 22 22'%3E%3C/polyline%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-rotate-ccw-icon lucide-rotate-ccw'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E");
   -webkit-mask-repeat: no-repeat;
@@ -247,13 +333,13 @@ body.has-results {
   pointer-events: none;
 }
 
-/* Show the icon in the accent color on hover */
+/* Display the icon in the accent color on hover */
 /*.engine-retry-link:hover::before {
   background-color: var(--accent, var(--primary-hover));
   opacity: 100%;
 }*/
 
-/* Show the engine name and stats in the accent color on hover */
+/* Display the engine name and stats in the accent color on hover */
 /*.engine-stat-row:has(.engine-retry-link:hover) .engine-stat-meta,
 .engine-stat-row:has(.engine-retry-link:hover) .engine-stat-label {
   color: var(--accent, var(--primary-hover));
@@ -288,12 +374,11 @@ body.has-results {
   color: var(--danger);
 }
 
-/* When hovering the Retry link, apply an effect to the origin icon */
+/* When hovering the retry link, apply an effect to the origin icon */
 .engine-stat-row:has(.engine-retry-link:hover) .engine-origin-icon {
-  /* Your effect here, for example: */
+  /* your effect here, for example: */
   /* filter: drop-shadow(0 0 4px var(--accent, var(--primary-hover))); */
-
-  /* Or a highlight similar to the one already present: */
+  /* or a highlight similar to the one already present: */
   filter: grayscale(0%);
   opacity: 100%;
 }
@@ -317,11 +402,15 @@ body.has-results {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
-/* ── Vertical space between engine/stat/Retry lines ─────────*/
+/* ── Vertical space between engines/stats/retry lines ─────────*/
 .engine-stat-row {
   margin-bottom: 0.2rem;
 }
@@ -330,7 +419,8 @@ body.has-results {
   min-height: 1.3rem;
 }
 
-/* body:not(:has(#image-engine-panel)) .engine-stat-info {
+/*
+body:not(:has(#image-engine-panel)) .engine-stat-info {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -338,9 +428,10 @@ body.has-results {
 
 body:not(:has(#image-engine-panel)) .engine-stat-label {
   margin: 0;
-} */
+}
+*/
 
-/* Display on a single line for ALL tabs (Web + Images) */
+/* Single-line display for ALL tabs (Web + Images) */
 .engine-stat-info {
   display: flex;
   align-items: center;
@@ -386,7 +477,7 @@ body:not(:has(#image-engine-panel)) .engine-stat-label {
 
 /* ── Favicons (bigger and rounded); original was rotate(5) ─────────────────────────────── */
 .result-item:hover img.result-favicon {
-  transform: scale(1) rotate(0); 
+  transform: scale(1) rotate(0);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   border-color: transparent;
 }
@@ -397,9 +488,9 @@ body:not(:has(#image-engine-panel)) .engine-stat-label {
   object-fit: contain;
 }
 
-/* ── Growing line on the left on hover; original width was 3px ──────────────────── */
+/* ── Growing line on the left on hover; original was width: 3px ─────────────────── */
 .result-item::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -429,7 +520,8 @@ body:not(:has(#image-engine-panel)) .engine-stat-label {
   flex-shrink: 0;
 }
 
-/*.degoog-panel:has(.engine-stat-row) .sidebar-accordion-body,
+/*
+.degoog-panel:has(.engine-stat-row) .sidebar-accordion-body,
 .ext-card:has(.engine-stat-row):not([class~="degoog-panel"]) .sidebar-accordion-body,
 .sidebar-panel:has(.engine-stat-row):not([class~="degoog-panel"]) .sidebar-accordion-body,
 .results-slot-panel:has(.engine-stat-row):not([class~="degoog-panel"]) .sidebar-accordion-body,
