@@ -1,4 +1,4 @@
-// --- Indicateur de mises à jour de plugins + rafraîchissement des dépôts ---
+// --- Plugin update indicator + repository refresh ---
 (function () {
   "use strict";
 
@@ -9,8 +9,8 @@
   const REFRESH_URL = "/api/store/repos/refresh";
   const STORE_URL = "/settings/store";
 
-  const CHECK_INTERVAL_MS = 10 * 60 * 1000;        // relecture de l'état : 10 min
-  const REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // rafraîchissement : 6 h
+  const CHECK_INTERVAL_MS = 10 * 60 * 1000;        // Re-check status: 10 min
+  const REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // Refresh: 6 h
   const REFRESH_KEY = "degoogLastStoreRefresh";
 
   let updateCount = 0;
@@ -27,8 +27,8 @@
 
     const label =
       updateCount === 1
-        ? "1 mise à jour de plugin disponible"
-        : `${updateCount} mises à jour de plugins disponibles`;
+        ? "1 plugin update available"
+        : `${updateCount} plugin updates available`;
 
     GEAR_IDS.forEach(gearId => {
       const gear = document.getElementById(gearId);
@@ -54,7 +54,7 @@
     const last = Number(localStorage.getItem(REFRESH_KEY) || 0);
     if (Date.now() - last < REFRESH_INTERVAL_MS) return;
 
-    // L'heure est enregistrée avant l'appel pour éviter les doublons entre onglets.
+    // The timestamp is saved before the request to prevent duplicates across tabs.
     localStorage.setItem(REFRESH_KEY, String(Date.now()));
 
     try {
@@ -64,13 +64,13 @@
       });
 
       if (!response.ok) {
-        // Échec (ex. session absente) : on retentera au prochain chargement.
+        // Failure (e.g. missing session): retry on the next page load.
         localStorage.setItem(REFRESH_KEY, String(last));
-        console.warn("[UpdateIndicator] refresh refusé :", response.status);
+        console.warn("[UpdateIndicator] refresh rejected:", response.status);
       }
     } catch (err) {
       localStorage.setItem(REFRESH_KEY, String(last));
-      console.warn("[UpdateIndicator] refresh impossible :", err);
+      console.warn("[UpdateIndicator] refresh failed:", err);
     }
   }
 
@@ -87,7 +87,7 @@
       updateCount = items.filter(i => i.installed && i.updateAvailable).length;
       renderBadge();
     } catch (err) {
-      console.warn("[UpdateIndicator] vérification impossible :", err);
+      console.warn("[UpdateIndicator] check failed:", err);
     }
   }
 
@@ -104,7 +104,7 @@
       if (document.visibilityState === "visible") run();
     });
 
-    // Replace les icônes si l'en-tête est recréé ou si un second engrenage apparaît.
+    // Re-position the icons if the header is recreated or a second gear icon appears.
     new MutationObserver(() => {
       if (updateCount > 0) renderBadge();
     }).observe(document.body, { childList: true, subtree: true });
