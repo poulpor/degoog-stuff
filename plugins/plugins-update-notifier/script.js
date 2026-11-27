@@ -10,7 +10,7 @@
   const STORE_URL = "/settings/store";
 
   const CHECK_INTERVAL_MS = 10 * 60 * 1000;        // relecture de l'état : 10 min
-  const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000; // rafraîchissement : 24 h
+  const REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // rafraîchissement : 6 h
   const REFRESH_KEY = "degoogLastStoreRefresh";
 
   let updateCount = 0;
